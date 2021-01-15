@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "C:\\Users\\lucas\\.conda\\envs\\keras-gpu\\python.exe",
+    "python.formatting.provider": "black"
+}

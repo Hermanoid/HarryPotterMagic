@@ -107,7 +107,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             // initialize the components (controls) of the window
             this.InitializeComponent();
 
-            this.detection_counter.Text = "";
+            //this.detection_counter.Text = "";
         }
 
         /// <summary>
@@ -256,17 +256,16 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
 
             // get the pointer to the bitmap's back buffer
             float* backBuffer = (float*)this.infraredBitmap.BackBuffer;
-            
 
             if (checkBox.IsChecked.HasValue && checkBox.IsChecked.Value)
             {
-                int detection_count = magic.ProcessFrame(frameData, infraredFrameDataSize, infraredFrameDescription);
+                int detection_count = magic.ProcessFrame(frameData, infraredFrameDataSize, infraredFrameDescription, captureSpellOption.IsChecked.Value, spellNameBox.Text);
                 var data = (float*)magic.traceCanvas.Data;
                 for (int i = 0; i < (int)(infraredFrameDataSize / this.infraredFrameDescription.BytesPerPixel); ++i)
                 {
                     backBuffer[i] = (float)data[i];
                 }
-                this.detection_counter.Text = detection_count.ToString();
+                //this.detection_counter.Text = detection_count.ToString();
             }
             else
             {

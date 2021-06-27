@@ -11,6 +11,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
+    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
@@ -103,10 +104,18 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             this.DataContext = this;
 
             magic = new Magic(infraredFrameDescription);
-
+            magic.bluetoothController.OnSpellListChanged += (spells) =>
+            {
+                spellsText.Dispatcher.Invoke(() =>
+                {
+                    spellsText.Text = string.Join(", ", spells);
+                });
+            };
+                
             // initialize the components (controls) of the window
             this.InitializeComponent();
 
+            magic.Initialize();
             //this.detection_counter.Text = "";
         }
 
@@ -295,6 +304,11 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             // set the status text
             this.StatusText = this.kinectSensor.IsAvailable ? Properties.Resources.RunningStatusText
                                                             : Properties.Resources.SensorNotAvailableStatusText;
+        }
+
+        private async void OnTextClick(object sender, RoutedEventArgs e)
+        {
+            await magic.bluetoothController.TriggerSpell(Spell.Lumos);
         }
     }
 }

@@ -18,11 +18,18 @@ kernel = np.ones((5,5))
 size = (30,30)
 test_proportion = 0.15
 label_indicies = { # Must match with Spells enum in C# project
-    "Lumos": 0,
-    "Balloonius Raisus": 1,
+
+    "Dud": 0
+    "Lumos": 1,
+    # "Balloonius Raisus": 1,
     "Shootify": 2,
     "Disneyosa": 3,
-    "Dud": 4
+    "Wingardium Leviosa": 4,
+    "Smallo Munchio": 5,
+    "Funsizarth": 6,
+    "Bigcandius": 7,
+    "Obtainafy": 8,
+    "Reparo": 9,
 }
 label_names = {index: name for name, index in label_indicies.items()}
 

@@ -9,13 +9,19 @@ using OpenCvSharp;
 
 namespace Microsoft.Samples.Kinect.InfraredBasics
 {
-    public enum Spells
+    public enum Spell
     {
-        Lumos,
-        Balloonius_Raisus,
-        Shootify,
-        Disneyosa,
-        Dud
+        Dud = 0,
+        Lumos = 1,
+        //Balloonius_Raisus,
+        Shootify = 2,
+        Disneyosa = 3,
+        Wingardium_Leviosa = 4,
+        Smallo_Munchio = 5,
+        Funsizarth = 6,
+        Bigcandius = 7,
+        Obtainafy = 8,
+        Reparo = 9,
     }
     public class SpellAI
     {
@@ -26,10 +32,10 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         {
             session = new InferenceSession(MODEL_LOCATION);
             //mlContext = new MLContext();
-            
+
         }
 
-        public Spells Identify(float[] sample)
+        public Spell Identify(float[] sample)
         {
             int[] dims = new int[] { 1, sample.Count() };
             var tensor = new DenseTensor<float>(sample, dims);
@@ -41,7 +47,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             using (var results = session.Run(xs))
             {
                 var one_hot = ((DenseTensor<float>)results.ElementAt(0).Value).Buffer.ToArray();
-                return (Spells)Array.IndexOf(one_hot,one_hot.Max());
+                return (Spell)Array.IndexOf(one_hot, one_hot.Max());
                 // manipulate the results
             }
         }

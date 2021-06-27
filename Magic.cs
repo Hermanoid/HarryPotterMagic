@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Kinect;
 using OpenCvSharp;
 
-
-
-
 namespace Microsoft.Samples.Kinect.InfraredBasics
 {
     public class Magic
@@ -36,6 +33,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         private readonly BackgroundSubtractorMOG mog;
         private readonly SimpleBlobDetector blobby;
         private readonly SpellAI spellAI;
+        public readonly BluetoothController bluetoothController;
         private readonly List<Point> tracePoints;
         private int dropoutFrames = 0;
         private int dropinFrames = 0;
@@ -79,6 +77,11 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             spellAI = new SpellAI();
             tracePoints = new List<Point>();
             traceCanvas = new Mat(new Size(infraredFrameDescription.Width, infraredFrameDescription.Height), MatType.CV_32F);
+            bluetoothController = new BluetoothController();
+        }
+        public void Initialize()
+        {
+            bluetoothController.Initialize();
         }
         internal unsafe int ProcessFrame(ushort* frameData, uint infraredFrameDataSize, FrameDescription infraredFrameDescription, bool captureSpell, string spellName)
         {
@@ -126,6 +129,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                             sample[i] = (float)data[i];
                         }
                         var result = spellAI.Identify(sample);
+                        bluetoothController.TriggerSpell(result);
                         spellArt = new Mat();
                         Cv2.ImRead($"{ART_PREFIX}{result}.png", ImreadModes.Grayscale).ConvertTo(spellArt, MatType.CV_32FC1, 1/256.0);
                         //Cv2.PutText(traceCanvas, result.ToString(), new Point(5, traceCanvas.Height-5), HersheyFonts.HersheySimplex, 1.5, Scalar.White);
@@ -144,12 +148,12 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                     // Do nothing. traceCanvas is set to the preview right as soon as it is created (in EndTrace), 
                     // so we don't need to update it here.
                 }
-                else if(current_effect_time <= EFFECT_TRACE_DURATION + EFFECT_TRANSITION_DURATION)
+                else if(current_effect_time <= EFFECT_TRACE_DURATION + EFFECT_TRANSITION_DURATION && !captureSpell)
                 {
                     var ratio = (current_effect_time - EFFECT_TRACE_DURATION) / EFFECT_TRANSITION_DURATION;
                     Cv2.AddWeighted(spellTrace, 1-ratio, spellArt, ratio, 0, traceCanvas);
                 }
-                else if (current_effect_time <= EFFECT_TRACE_DURATION + EFFECT_TRANSITION_DURATION + EFFECT_ART_DURATION)
+                else if (current_effect_time <= EFFECT_TRACE_DURATION + EFFECT_TRANSITION_DURATION + EFFECT_ART_DURATION && !captureSpell)
                 {
                     //Yes, this will be repeated a whole bunch of times for no reason, but I don't care enough to fix it. So.
                     spellArt.CopyTo(traceCanvas);
@@ -159,6 +163,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                     validTraceDetected = false;
                     validTraceProcessed = false;
                 }
+                
                 return 0;
             }
             else

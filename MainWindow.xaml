@@ -36,7 +36,7 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid Margin="10 0 10 0">
+    <Grid Margin="9,1,10.6,-0.6">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
@@ -45,9 +45,14 @@
         </Grid.RowDefinitions>
 
         <Image Grid.Row="0" Source="Images\Logo.png" HorizontalAlignment="Left" Stretch="Fill" Height="32" Width="81" Margin="0 10 0 5" />
-        <TextBlock Grid.Row="0" Margin="0 0 -1 0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Infrared Basics</TextBlock>
         <Image Grid.Row="0" Source="Images\Status.png" Stretch="None" HorizontalAlignment="Center" Margin="0 0 0 5" />
+        <Border Grid.Row="0" HorizontalAlignment="Right" Height="20" Margin="0,0,8,8" VerticalAlignment="Bottom" CornerRadius="3" BorderThickness="2" BorderBrush="#FFAEAEAE" Padding="2">
+            <StackPanel  Orientation="Horizontal" >
+                <Label x:Name="label" Content="Active Spells:" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Arial" Padding="0,0,5,0"/>
+                <TextBlock x:Name="spellsText" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Padding="0,0,0,0">Text</TextBlock>
 
+            </StackPanel>
+        </Border>
         <Viewbox Grid.Row="1" HorizontalAlignment="Center">
             <Image Source="{Binding ImageSource}" Stretch="UniformToFill" />
         </Viewbox>
@@ -62,5 +67,7 @@
         <StatusBar Grid.Row="3" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
             <StatusBarItem Content="{Binding StatusText}" />
         </StatusBar>
+        <Button x:Name="button" Content="Test Cast" HorizontalAlignment="Left" Margin="193,4.2,0,0" Grid.Row="2" VerticalAlignment="Top" Width="75" Click="OnTextClick"/>
+
     </Grid>
 </Window>

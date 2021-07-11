@@ -15,6 +15,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
     using System.Windows;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+    using System.Linq;
     using Microsoft.Kinect;
 
     /// <summary>
@@ -104,19 +105,38 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             this.DataContext = this;
 
             magic = new Magic(infraredFrameDescription);
-            magic.bluetoothController.OnSpellListChanged += (spells) =>
+            magic.gameController.bluetoothController.OnSpellListChanged += (spells) =>
             {
                 spellsText.Dispatcher.Invoke(() =>
                 {
                     spellsText.Text = string.Join(", ", spells);
                 });
             };
+
+
                 
             // initialize the components (controls) of the window
             this.InitializeComponent();
 
             magic.Initialize();
             //this.detection_counter.Text = "";
+
+            Action castSpellUpdate = () =>
+            {
+                castSpell.Text = string.Join(
+                    " or ",
+                    magic.gameController.machine.PermittedTriggers.Select(t => t.ToString().Replace("_", " ")));
+            };
+            magic.gameController.machine.OnTransitionCompleted((transition) =>
+            {
+                robotStatus.Dispatcher.Invoke(() =>
+                {
+                    robotStatus.Text = transition.Destination.ToString();
+                });
+                castSpell.Dispatcher.Invoke(castSpellUpdate);
+            });
+            robotStatus.Text = magic.gameController.machine.State.ToString();
+            castSpellUpdate();
         }
 
         /// <summary>
@@ -308,7 +328,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
 
         private async void OnTextClick(object sender, RoutedEventArgs e)
         {
-            await magic.bluetoothController.TriggerSpell(Spell.Lumos);
+            await magic.gameController.TriggerSpell(Spell.Lumos);
         }
     }
 }

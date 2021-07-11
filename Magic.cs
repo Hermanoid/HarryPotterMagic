@@ -20,7 +20,6 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         private const int TRACE_IMG_SIZE = 300;
         private const int TRACE_IMG_PADDING = 5;
         private const int TRACE_LINE_THICKNESS = 3;
-        private const int TRACE_AI_SIZE = 30;
         private const float EFFECT_TRACE_DURATION = 0.5f;
         private const float EFFECT_TRANSITION_DURATION = 1f;
         private const float EFFECT_ART_DURATION = 3.5f;
@@ -33,7 +32,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         private readonly BackgroundSubtractorMOG mog;
         private readonly SimpleBlobDetector blobby;
         private readonly SpellAI spellAI;
-        public readonly BluetoothController bluetoothController;
+        public readonly GameController gameController;
         private readonly List<Point> tracePoints;
         private int dropoutFrames = 0;
         private int dropinFrames = 0;
@@ -77,11 +76,11 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             spellAI = new SpellAI();
             tracePoints = new List<Point>();
             traceCanvas = new Mat(new Size(infraredFrameDescription.Width, infraredFrameDescription.Height), MatType.CV_32F);
-            bluetoothController = new BluetoothController();
+            gameController = new GameController();
         }
         public void Initialize()
         {
-            bluetoothController.Initialize();
+            gameController.Initialize();
         }
         internal unsafe int ProcessFrame(ushort* frameData, uint infraredFrameDataSize, FrameDescription infraredFrameDescription, bool captureSpell, string spellName)
         {
@@ -120,8 +119,8 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                         kernel.SetTo(new Scalar(1));
                         Mat squeezed = new Mat();
                         Cv2.Dilate(traceFinal, squeezed, kernel, iterations: 2);
-                        Cv2.Resize(squeezed, squeezed, new Size(TRACE_AI_SIZE, TRACE_AI_SIZE));
-                        int pixels = TRACE_AI_SIZE * TRACE_AI_SIZE;
+                        Cv2.Resize(squeezed, squeezed, new Size(SpellAI.TRACE_AI_SIZE, SpellAI.TRACE_AI_SIZE));
+                        int pixels = SpellAI.TRACE_AI_SIZE * SpellAI.TRACE_AI_SIZE;
                         float[] sample = new float[pixels];
                         byte* data = (byte*)squeezed.Data;
                         for (int i = 0; i < pixels; i++)
@@ -129,7 +128,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                             sample[i] = (float)data[i];
                         }
                         var result = spellAI.Identify(sample);
-                        bluetoothController.TriggerSpell(result);
+                        gameController.TriggerSpell(result).Wait();
                         spellArt = new Mat();
                         Cv2.ImRead($"{ART_PREFIX}{result}.png", ImreadModes.Grayscale).ConvertTo(spellArt, MatType.CV_32FC1, 1/256.0);
                         //Cv2.PutText(traceCanvas, result.ToString(), new Point(5, traceCanvas.Height-5), HersheyFonts.HersheySimplex, 1.5, Scalar.White);

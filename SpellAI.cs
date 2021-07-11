@@ -20,12 +20,14 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         Smallo_Munchio = 5,
         Funsizarth = 6,
         Bigcandius = 7,
-        Obtainafy = 8,
+        Obtainit = 8,
         Reparo = 9,
     }
+
     public class SpellAI
     {
         private const string MODEL_LOCATION = "C:\\Source\\HarryPotterMagic\\SpellNet\\model.onnx";
+        public const int TRACE_AI_SIZE = 50;
         //private MLContext mlContext;
         private InferenceSession session;
         public SpellAI()
@@ -37,11 +39,11 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
 
         public Spell Identify(float[] sample)
         {
-            int[] dims = new int[] { 1, sample.Count() };
-            var tensor = new DenseTensor<float>(sample, dims);
+            int[] dims = new int[] { 1, TRACE_AI_SIZE, TRACE_AI_SIZE, 1 };
+            Tensor<float> t1 = new DenseTensor<float>(sample, dims);
             var xs = new List<NamedOnnxValue>()
             {
-                NamedOnnxValue.CreateFromTensor<float>("dense_input", tensor),
+                NamedOnnxValue.CreateFromTensor<float>("conv2d_input", t1),
             };
 
             using (var results = session.Run(xs))

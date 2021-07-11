@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# CS3002: Return type is not CLS-compliant
+dotnet_diagnostic.CS3002.severity = silent
+
+# CS3003: Type is not CLS-compliant
+dotnet_diagnostic.CS3003.severity = silent

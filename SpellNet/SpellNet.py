@@ -4,22 +4,22 @@ import numpy as np
 import os
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
+import tensorflow.keras.layers as layers
 import keras2onnx
 import onnx
 
 import tensorflow as tf
-physical_devices = tf.config.list_physical_devices('GPU') 
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
+# physical_devices = tf.config.list_physical_devices('GPU') 
+# tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 
 data_path = "D:\\Media\\WandShots\\"
 kernel = np.ones((5,5))
-size = (30,30)
-test_proportion = 0.15
+size = (50,50)
+test_proportion = 0.1
 label_indicies = { # Must match with Spells enum in C# project
 
-    "Dud": 0
+    "Dud": 0,
     "Lumos": 1,
     # "Balloonius Raisus": 1,
     "Shootify": 2,
@@ -28,7 +28,7 @@ label_indicies = { # Must match with Spells enum in C# project
     "Smallo Munchio": 5,
     "Funsizarth": 6,
     "Bigcandius": 7,
-    "Obtainafy": 8,
+    "Obtainit": 8,
     "Reparo": 9,
 }
 label_names = {index: name for name, index in label_indicies.items()}
@@ -68,12 +68,16 @@ def preview(data):
     plt.show()
 
 def create_model(input_shape):
-    model = Sequential()
-    model.add(Dense(512, activation='relu', input_shape=input_shape))
-    model.add(Dropout(0.5))
-    model.add(Dense(512, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(len(label_names), activation='softmax'))
+    model = Sequential([
+        layers.Conv2D(32, kernel_size=(3, 3), activation="relu", input_shape=input_shape),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Dropout(0.15),
+        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Flatten(),
+        layers.Dropout(0.5),
+        layers.Dense(len(label_names), activation="softmax"),
+    ])
     model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
@@ -82,17 +86,20 @@ def create_model(input_shape):
 
 train_images, train_labels, test_images, test_labels = load_data()
 
-dim_data = np.prod(train_images.shape[1:])
-train_data = train_images.reshape(train_images.shape[0], dim_data)
-test_data = test_images.reshape(test_images.shape[0], dim_data)
+# preview(train_images)
+# cv2.waitKey()
+
+dim_data = np.array((*train_images.shape[1:],1))
+train_data = train_images.reshape(train_images.shape[0], *dim_data)
+test_data = test_images.reshape(test_images.shape[0], *dim_data)
 train_data = train_data.astype('float32')
 test_data = test_data.astype('float32')
 train_labels_one_hot = to_categorical(train_labels)
 test_labels_one_hot = to_categorical(test_labels)
 
-model = create_model((dim_data,))
+model = create_model((dim_data))
 
-history = model.fit(train_data, train_labels_one_hot, batch_size=256, epochs=20, verbose=1,
+history = model.fit(train_data, train_labels_one_hot, batch_size=256, epochs=40, verbose=1,
     validation_data=(test_data, test_labels_one_hot))
 
 [test_loss, test_acc] = model.evaluate(test_data, test_labels_one_hot)

@@ -13,7 +13,8 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         Level_Three,
         Level_One_Failed,
         Level_Two_Failed,
-        Level_Three_Failed
+        Level_Three_Failed,
+        Obtainit
     };
     public enum Trigger
     {
@@ -26,6 +27,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         Reparo = Spell.Reparo,
         Times_Up = -1,
         Startup_Complete = -2,
+        Obtainit_Complete = -3
     }
     public partial class GameController
     {
@@ -37,63 +39,54 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                 .Permit(Trigger.Startup_Complete, State.Waiting);
 
             machine.Configure(State.Waiting)
-                .OnEntry(onEnterWaiting)
-                .Permit(Trigger.Wingardium_Leviosa, State.Raised)
+                .OnEntryAsync(onEnterWaiting)
+                .PermitIf(Trigger.Wingardium_Leviosa, State.Raised, () => !manual_override)
                 .Ignore(Trigger.Times_Up);
 
             machine.Configure(State.Raised)
-                .OnEntry(onEnterRaised)
+                .OnEntryAsync(onEnterRaised)
                 .Permit(Trigger.Smallo_Munchio, State.Level_One)
                 .Permit(Trigger.Dud, State.Raised_Failed)
                 .Permit(Trigger.Times_Up, State.Raised_Failed);
 
             machine.Configure(State.Raised_Failed)
-                .OnEntry(onEnterReparo)
+                .OnEntryAsync(onEnterReparo)
                 .Permit(Trigger.Reparo, State.Raised)
                 .Permit(Trigger.Times_Up, State.Waiting);
 
             machine.Configure(State.Level_One)
-                .OnEntry(onEnterLevelOne)
+                .OnEntryAsync(onEnterLevelOne)
                 .Permit(Trigger.Funsizarth, State.Level_Two)
                 .Permit(Trigger.Dud, State.Level_One_Failed)
                 .Permit(Trigger.Times_Up, State.Level_One_Failed)
-                .Permit(Trigger.Obtainit, State.Waiting);
+                .Permit(Trigger.Obtainit, State.Obtainit);
 
             machine.Configure(State.Level_One_Failed)
-                .OnEntry(onEnterReparo)
+                .OnEntryAsync(onEnterReparo)
                 .Permit(Trigger.Reparo, State.Level_One)
                 .Permit(Trigger.Times_Up, State.Waiting);
 
             machine.Configure(State.Level_Two)
-                .OnEntry(onEnterLevelTwo)
+                .OnEntryAsync(onEnterLevelTwo)
                 .Permit(Trigger.Bigcandius, State.Level_Three)
                 .Permit(Trigger.Dud, State.Level_Two_Failed)
                 .Permit(Trigger.Times_Up, State.Level_Two_Failed)
-                .Permit(Trigger.Obtainit, State.Waiting);
+                .Permit(Trigger.Obtainit, State.Obtainit);
 
             machine.Configure(State.Level_Two_Failed)
-                .OnEntry(onEnterReparo)
+                .OnEntryAsync(onEnterReparo)
                 .Permit(Trigger.Reparo, State.Level_Two)
                 .Permit(Trigger.Times_Up, State.Waiting);
 
             machine.Configure(State.Level_Three)
-                .OnEntry(onEnterLevelThree)
-                .Permit(Trigger.Dud, State.Level_Three_Failed)
-                .Permit(Trigger.Times_Up, State.Level_Three_Failed)
-                .Permit(Trigger.Obtainit, State.Waiting);
+                .OnEntryAsync(onEnterLevelThree)
+                .Permit(Trigger.Dud, State.Waiting)
+                .Permit(Trigger.Times_Up, State.Waiting)
+                .Permit(Trigger.Obtainit, State.Obtainit);
 
-            machine.Configure(State.Level_Three_Failed)
-                .OnEntry(onEnterReparo)
-                .Permit(Trigger.Reparo, State.Level_Three)
-                .Permit(Trigger.Times_Up, State.Waiting);
-
-            machine.OnTransitioned((transition) =>
-            {
-                if(transition.Trigger == Trigger.Obtainit)
-                {
-                    onObtainit();
-                }
-            });
+            machine.Configure(State.Obtainit)
+                .OnEntryAsync(onEnterObtainit)
+                .Permit(Trigger.Obtainit_Complete, State.Waiting);
 
             return machine;
         }

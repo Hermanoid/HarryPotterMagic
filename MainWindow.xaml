@@ -81,8 +81,15 @@
             </StackPanel>
         </StackPanel>
         <DockPanel Grid.Row="3" Margin="0,4,0,24" >
-            <CheckBox x:Name="checkBox" Content="Enrich the Magicks Forthwidth" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Top" Height="16"/>
-            <StackPanel Height="16" Margin="0,2" VerticalAlignment="Top" Orientation="Horizontal" HorizontalAlignment="Right">
+            <CheckBox x:Name="checkBox" Content="Enrich the Magicks Forthwidth" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Height="16"/>
+            <Label Content="Move to:" Height="25.6" VerticalAlignment="Top" Margin="13,0,0,0"/>
+            <ComboBox x:Name="GrabControlOption" Height="22.4" VerticalAlignment="Top" Width="120" HorizontalAlignment="Left" Margin="0">
+                <ComboBoxItem Content="Grab #1" Tag="Level_One" IsSelected="True"/>
+                <ComboBoxItem Content="Grab #2" Tag="Level_Two"/>
+                <ComboBoxItem Content="Grab #3" Tag="Level_Three"/>
+            </ComboBox>
+            <Button x:Name="GrabControlButton" Content="Go" Width="34" Margin="6,0,0,3.6" Click="GrabControlButton_Click"/>
+            <StackPanel Height="16" Margin="0,2" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Right">
                 <CheckBox x:Name="captureSpellOption" Content="Capture Spell:" Margin="0" Width="94" VerticalAlignment="Center"/>
                 <TextBox x:Name="spellNameBox" TextWrapping="Wrap" Width="125" Margin="0" MaxLines="5" VerticalAlignment="Center"/>
             </StackPanel>

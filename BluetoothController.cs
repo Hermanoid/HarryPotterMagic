@@ -93,6 +93,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             try
             {
                 BluetoothLEDevice device = BluetoothLEDevice.FromIdAsync(args.Id).AsTask().Result;
+                if (device == null) return;
                 Spell result = await Connect(args, device);
                 device.ConnectionStatusChanged += async (dev, obj) =>
                 {

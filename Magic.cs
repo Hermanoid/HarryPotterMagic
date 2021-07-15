@@ -129,7 +129,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                             sample[i] = (float)data[i];
                         }
                         var result = spellAI.Identify(sample);
-                        gameController.TriggerSpell(result).Wait();
+                        Task.Run(()=> gameController.TriggerSpell(result));
                         spellArt = new Mat();
                         Cv2.ImRead($"{ART_PREFIX}{result}.png", ImreadModes.Grayscale).ConvertTo(spellArt, MatType.CV_32FC1, 1/256.0);
                         //Cv2.PutText(traceCanvas, result.ToString(), new Point(5, traceCanvas.Height-5), HersheyFonts.HersheySimplex, 1.5, Scalar.White);

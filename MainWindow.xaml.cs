@@ -18,6 +18,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
     using System.Linq;
     using Microsoft.Kinect;
     using System.Windows.Threading;
+    using System.Windows.Controls;
 
     /// <summary>
     /// Interaction logic for the MainWindow
@@ -153,7 +154,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                     }
                     else if (current_time == 0)
                     {
-                        timeRemaining.Text = "Time's Up!";
+                        timeRemaining.Text = "Clock is Off";
                     }
                     else
                     {
@@ -356,6 +357,26 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         private async void OnTextClick(object sender, RoutedEventArgs e)
         {
             await magic.gameController.TriggerSpell(Spell.Lumos);
+        }
+
+        private bool is_grabbing = false;
+        private async void GrabControlButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (magic.gameController.machine.State != State.Waiting)
+            {
+                return;
+            }
+            if (!is_grabbing)
+            {
+                is_grabbing = true;
+                State target_state = (State)Enum.Parse(typeof(State), ((ComboBoxItem)GrabControlOption.SelectedItem).Tag.ToString());
+                await magic.gameController.ManualStartGrab(target_state);
+            }
+            else
+            {
+                is_grabbing = false;
+                await magic.gameController.ManualFinishGrab();
+            }
         }
     }
 }

@@ -75,7 +75,7 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left">
                     <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" FontFamily="Myanmar Text" FontSize="24" Margin="0,0,0,-0.2" Width="NaN" Text="TIME REMAINING:"/>
                     <Border HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="#FFFF1F1F" BorderThickness="4" CornerRadius="14" Padding="10" Margin="10">
-                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,-8" FontFamily="Myanmar Text" FontSize="24" VerticalAlignment="Center"><Run Text="WINGARDIUM LEVIOSA"/></TextBlock>
+                        <TextBlock x:Name="timeRemaining" TextWrapping="Wrap" Margin="0,0,0,-8" FontFamily="Myanmar Text" FontSize="24" VerticalAlignment="Center"><Run Text="WINGARDIUM LEVIOSA"/></TextBlock>
                     </Border>
                 </StackPanel>
             </StackPanel>

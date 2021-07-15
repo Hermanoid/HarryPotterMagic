@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Kinect;
 using OpenCvSharp;
+using Windows.UI.Xaml;
 
 namespace Microsoft.Samples.Kinect.InfraredBasics
 {
@@ -22,7 +23,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         private const int TRACE_LINE_THICKNESS = 3;
         private const float EFFECT_TRACE_DURATION = 0.5f;
         private const float EFFECT_TRANSITION_DURATION = 1f;
-        private const float EFFECT_ART_DURATION = 3.5f;
+        private const float EFFECT_ART_DURATION = 2f;
         private const string SAVE_PREFIX = "D:/Media/WandShots/";
         private const string ART_PREFIX = "C:/Source/HarryPotterMagic/Images/";
         const int FLICK_ANGLE_MIN = 70;
@@ -78,9 +79,9 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             traceCanvas = new Mat(new Size(infraredFrameDescription.Width, infraredFrameDescription.Height), MatType.CV_32F);
             gameController = new GameController();
         }
-        public void Initialize()
+        public async Task Initialize()
         {
-            gameController.Initialize();
+            await gameController.Initialize();
         }
         internal unsafe int ProcessFrame(ushort* frameData, uint infraredFrameDataSize, FrameDescription infraredFrameDescription, bool captureSpell, string spellName)
         {

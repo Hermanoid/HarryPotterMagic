@@ -5,3 +5,6 @@ dotnet_diagnostic.CS3002.severity = silent
 
 # CS3003: Type is not CLS-compliant
 dotnet_diagnostic.CS3003.severity = silent
+
+# CS3001: Argument type is not CLS-compliant
+dotnet_diagnostic.CS3001.severity = silent

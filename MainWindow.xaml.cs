@@ -17,6 +17,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
     using System.Windows.Media.Imaging;
     using System.Linq;
     using Microsoft.Kinect;
+    using System.Windows.Threading;
 
     /// <summary>
     /// Interaction logic for the MainWindow
@@ -118,14 +119,19 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             // initialize the components (controls) of the window
             this.InitializeComponent();
 
-            magic.Initialize();
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 1);
+            timer.Start();
+
+            Task.Run(() => magic.Initialize());
             //this.detection_counter.Text = "";
 
             Action castSpellUpdate = () =>
             {
                 castSpell.Text = string.Join(
-                    " or ",
-                    magic.gameController.machine.PermittedTriggers.Select(t => t.ToString().Replace("_", " ")));
+                    " or ", magic.gameController.machine.PermittedTriggers
+                        .Where(t => t != Trigger.Dud && t != Trigger.Times_Up)
+                        .Select(t => t.ToString().Replace("_", " ")));
             };
             magic.gameController.machine.OnTransitionCompleted((transition) =>
             {
@@ -135,8 +141,29 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                 });
                 castSpell.Dispatcher.Invoke(castSpellUpdate);
             });
-            robotStatus.Text = magic.gameController.machine.State.ToString();
+            timer.Tick += (sender, e) =>
+            {
+                magic.gameController.dispatcherTimer_Tick(sender, e);
+                timeRemaining.Dispatcher.Invoke(() =>
+                {
+                    var current_time = magic.gameController.current_time;
+                    if (magic.gameController.machine.State == State.Waiting)
+                    {
+                        timeRemaining.Text = "Not Playing";
+                    }
+                    else if (current_time == 0)
+                    {
+                        timeRemaining.Text = "Time's Up!";
+                    }
+                    else
+                    {
+                        timeRemaining.Text = $"{current_time} second{(current_time == 1 ? "" : "s")}";
+                    }
+                });
+            };
             castSpellUpdate();
+            robotStatus.Text = magic.gameController.machine.State.ToString();
+            timeRemaining.Text = "Not Playing";
         }
 
         /// <summary>

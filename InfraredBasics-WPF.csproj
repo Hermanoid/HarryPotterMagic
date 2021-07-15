@@ -330,6 +330,7 @@
     </ApplicationDefinition>
     <Compile Include="BluetoothController.cs" />
     <Compile Include="GameController.cs" />
+    <Compile Include="GameController.Positions.cs" />
     <Compile Include="SpellAI.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
